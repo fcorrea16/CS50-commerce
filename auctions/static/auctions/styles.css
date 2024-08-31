@@ -1,3 +1,17 @@
 body {
     padding: 10px;
 }
+
+
+.home_listing_img {
+    width: 300px;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+.listing_img {
+    width: 600px;
+}
