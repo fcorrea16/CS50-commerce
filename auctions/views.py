@@ -3,8 +3,9 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django import forms
 
-from .models import User, Listing
+from .models import User, Listing, Categories
 
 
 def index(request):
@@ -70,3 +71,30 @@ def listing(request, listing_id):
     return render(request, "auctions/listing.html", {
         "listing": listing
     })
+
+
+class AddListing(forms.Form):
+    title = forms.CharField(max_length=64, label="Title")
+    description = forms.CharField(widget=forms.Textarea(
+        attrs={'class': 'textarea_description'}), label="description")
+    starting_bid = forms.IntegerField()
+    image = forms.ImageField()
+    categories = forms.ModelMultipleChoiceField(
+        queryset=Categories.objects.all())
+
+
+def add(request):
+    if request.method == "POST":
+        title = request.POST.get('title')
+        description = request.POST.get('description')
+        starting_bid = request.POST.get('starting_bid')
+        image = request.POST.get('image')
+        categories = request.POST.get('categories')
+        listing = Listing.objects.create(
+            title=title, description=description, starting_bid=starting_bid, image=image)
+        listing.categories.set(categories)
+        return HttpResponseRedirect(reverse("listing", args=(listing.id,)))
+    else:
+        return render(request, "auctions/add.html", {
+            "form": AddListing()
+        })
