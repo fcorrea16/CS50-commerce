@@ -83,7 +83,7 @@ class AddListing(forms.Form):
         queryset=Categories.objects.all())
 
 
-@login_required
+@login_required(login_url='login')
 def add(request):
     if request.method == "POST":
         form = AddListing(request.POST, request.FILES)
