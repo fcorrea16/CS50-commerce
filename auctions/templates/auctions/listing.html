@@ -2,9 +2,11 @@
 
 {% block body %}
 <h2>Bid on {{listing.title}}</h2>
-<p>{{listing.description}}</p>
-<div class="listing_img"><img src="../media/{{listing.image}}" alt="{{listing.title}} image"></div>
 <p>Starting Bid = U${{listing.starting_bid}}</p>
+
+
+<div class="listing_img"><img src="../media/{{listing.image}}" alt="{{listing.title}} image"></div>
+<p>{{listing.description}}</p>
 <p>{{listing.created_at}}</p>
 
 {% endblock %}

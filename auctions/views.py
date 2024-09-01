@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django import forms
 from .models import User, Listing, Categories
+from django.contrib.auth.decorators import login_required
 
 
 def index(request):
@@ -82,6 +83,7 @@ class AddListing(forms.Form):
         queryset=Categories.objects.all())
 
 
+@login_required
 def add(request):
     if request.method == "POST":
         form = AddListing(request.POST, request.FILES)
@@ -91,8 +93,10 @@ def add(request):
             starting_bid = form.cleaned_data['starting_bid']
             image = request.FILES.get('image')
             categories = request.POST.get('categories')
+            listed_createdby = request.user
+            print(listed_createdby)
             listing = Listing.objects.create(
-                title=title, description=description, starting_bid=starting_bid, image=image)
+                title=title, description=description, starting_bid=starting_bid, image=image, listed_by=listed_createdby)
             listing.categories.set(categories)
             return HttpResponseRedirect(reverse("listing", args=(listing.id,)))
     else:

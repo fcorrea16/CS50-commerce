@@ -3,7 +3,6 @@ from django.db import models
 
 
 class User(AbstractUser):
-    # watchlist =
     pass
 
 
@@ -33,6 +32,8 @@ class Listing(models.Model):
         Categories, related_name="categories")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    listed_by = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="listed_by")
 
     def __str__(self):
         return f"{self.id}: {self.title} with starting bid: {self.starting_bid}"
