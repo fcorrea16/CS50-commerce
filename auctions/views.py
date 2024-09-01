@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadReque
 from django.shortcuts import render
 from django.urls import reverse
 from django import forms
-from .models import User, Listing, Categories, Watchlist
+from .models import User, Listing, Categories, Watchlist, Bids
 from django.contrib.auth.decorators import login_required
 
 
@@ -66,22 +66,6 @@ def register(request):
         return render(request, "auctions/register.html")
 
 
-# def watchlist_add(request, product_id):
-#     item_to_save = get_object_or_404(Product, pk=product_id)
-#     # Check if the item already exists in that user watchlist
-#     if Watchlist.objects.filter(user=request.user, item=item_id).exists():
-#         messages.add_message(request, messages.ERROR,
-#                              "You already have it in your watchlist.")
-#         return HttpResponseRedirect(reverse("auctions:index"))
-#     # Get the user watchlist or create it if it doesn't exists
-#     user_list, created = Watchlist.objects.get_or_create(user=request.user)
-#     # Add the item through the ManyToManyField (Watchlist => item)
-#     user_list.item.add(item_to_save)
-#     messages.add_message(request, messages.SUCCESS,
-#                          "Successfully added to your watchlist")
-#     return render(request, "auctions/watchlist.html")
-
-
 def watchlist(request):
     if request.method == "POST":
         current_user = request.user
@@ -108,9 +92,19 @@ def listing(request, listing_id):
     listing = Listing.objects.get(pk=listing_id)
     watchlist = Watchlist.objects.filter(
         user_watching=request.user, listing_watching=listing).exists()
+    # current_bid = Listing.objects.get(current_bid=current_bid)
+    bid = 0
+    try:
+        bid = Bids.objects.get(bid_listing=listing)
+    except:
+        bid = 0
     return render(request, "auctions/listing.html", {
-        "listing": listing, "watchlist": watchlist
+        "listing": listing, "watchlist": watchlist, "bid": bid
     })
+
+
+def bid(request):
+    pass
 
 
 class AddListing(forms.Form):

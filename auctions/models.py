@@ -13,10 +13,6 @@ class Categories(models.Model):
         return f"{self.id}:{self.name}"
 
 
-class Bids(models.Model):
-    pass
-
-
 class Listing_comments(models.Model):
     pass
 
@@ -48,4 +44,11 @@ class Watchlist(models.Model):
     def __str__(self):
         return f"{self.id}: {self.user_watching} {self.listing_watching}"
 
-#  self.level.all().values_list('code', flat=True)))
+
+class Bids(models.Model):
+    bid_user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="bid_user", blank=True, null=True)
+    bid_listing = models.ForeignKey(
+        Listing, on_delete=models.CASCADE, related_name="bid_listing", blank=True, null=True)
+    highest_bid = models.IntegerField(default=0)
+    last_bid = models.DateTimeField(auto_now=True)

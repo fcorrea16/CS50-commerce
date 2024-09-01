@@ -4,25 +4,34 @@
 <h2>Bid on {{listing.title}}</h2>
 <p>Starting Bid = U${{listing.starting_bid}}</p>
 
+{% if bid.highest_bid == None%}
+<p>no bids yet</p>
+{% elif listing.starting_bid < bid.highest_bid %} <p>Highest Bid = U${{bid.highest_bid }}</p>
+    {% endif %}
 
-{% if user.is_authenticated %}
-{% if watchlist == True %}
-<form action="{% url 'watchlist' %}" method="post">
+
+    {% if user.is_authenticated %}
+    <form action="{% url 'bid' %}" method="post">
+        {% csrf_token %}
+        <input type="text" name="new_bid" placeholder="{{ bid.highest_bid }}">
+        <input class="btn btn-primary new_bid" type="submit" value="Submit Bid">
+    </form>
+    {% endif %}
+
+    <div class="listing_img"><img src="../media/{{listing.image}}" alt="{{listing.title}} image"></div>
+    <p>{{listing.description}}</p>
+
+
+    {% if user.is_authenticated %}
+    <form action="{% url 'watchlist' %}" method="post"></form>
     {% csrf_token %}
+    {% if watchlist == True %}
     <input class="btn btn-outline-primary watchlist" type="submit" value="Already in your Watchlist">
-    <input type="hidden" name="listing_id" value="{{listing.id}}" />
-</form>
-{%else%}
-<form action="{% url 'watchlist' %}" method="post">
-    {% csrf_token %}
+    {%else%}
     <input class="btn btn-primary watchlist" type="submit" value="watchlist">
+    {% endif %}
     <input type="hidden" name="listing_id" value="{{listing.id}}" />
-</form>
-{% endif %}
-{% endif %}
-
-<div class="listing_img"><img src="../media/{{listing.image}}" alt="{{listing.title}} image"></div>
-<p>{{listing.description}}</p>
-<p>{{listing.created_at}}</p>
-
-{% endblock %}
+    </form>
+    {% endif %}
+    <p>{{listing.created_at}}</p>
+    {% endblock %}
