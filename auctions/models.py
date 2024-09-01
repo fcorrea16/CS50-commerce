@@ -46,4 +46,6 @@ class Watchlist(models.Model):
         Listing, blank=True, related_name="listings_watched")
 
     def __str__(self):
-        return f"{self.id}: {self.user_watching}"
+        return f"{self.id}: {self.user_watching} {self.listings_watched.all()}"
+
+#  self.level.all().values_list('code', flat=True)))

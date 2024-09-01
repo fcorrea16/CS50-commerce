@@ -8,6 +8,10 @@ from .models import User, Listing, Categories, Watchlist
 from django.contrib.auth.decorators import login_required
 
 
+def checkwatchlist(object):
+    pass
+
+
 def index(request):
     return render(request, "auctions/index.html", {
         "listings": Listing.objects.all()
