@@ -29,13 +29,8 @@ class Listing(models.Model):
     starting_bid = models.IntegerField()
     image = models.ImageField(null=True, blank=True,
                               upload_to='listings/images/')
-    # image = models.CharField(max_length=150)
     categories = models.ManyToManyField(
         Categories, related_name="categories")
-    # categories = models.ForeignKey(
-    #     Categories, on_delete=models.CASCADE, related_name="categories")
-    # comments = models.ForeignKey(
-    #     Listing_comments, on_delete=models.CASCADE, related_name="comments")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

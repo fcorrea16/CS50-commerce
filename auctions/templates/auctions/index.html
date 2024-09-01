@@ -7,7 +7,7 @@
 <div class="home_listing">
     <h3><a href="{{listing.id}}">{{listing.title}}</a></h3>
     <p>{{listing.description|slice:":255"}}...<a href="{{listing.id}}">Read more</a></p>
-    <div class="home_listing_img"><img src="../media/{{listing.image}}" alt="{{listing.title}} image"></div>
+    <div class="home_listing_img"><img src="{{listing.image.url}}" alt="{{listing.title}} image"></div>
     <p>Starting Bid = U${{listing.starting_bid}}</p>
     <p>Created on: {{listing.created_at}}</p>
 </div>
