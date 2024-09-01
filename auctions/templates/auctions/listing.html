@@ -4,12 +4,21 @@
 <h2>Bid on {{listing.title}}</h2>
 <p>Starting Bid = U${{listing.starting_bid}}</p>
 
+
 {% if user.is_authenticated %}
-<form action="{{request.path}}" method="post">
+{% if watchlist == True %}
+<form action="{% url 'watchlist' %}" method="post">
+    {% csrf_token %}
+    <input class="btn btn-outline-primary watchlist" type="submit" value="Already in your Watchlist">
+    <input type="hidden" name="listing_id" value="{{listing.id}}" />
+</form>
+{%else%}
+<form action="{% url 'watchlist' %}" method="post">
     {% csrf_token %}
     <input class="btn btn-primary watchlist" type="submit" value="watchlist">
+    <input type="hidden" name="listing_id" value="{{listing.id}}" />
 </form>
-{% else %}
+{% endif %}
 {% endif %}
 
 <div class="listing_img"><img src="../media/{{listing.image}}" alt="{{listing.title}} image"></div>

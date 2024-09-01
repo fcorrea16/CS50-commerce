@@ -42,10 +42,10 @@ class Listing(models.Model):
 class Watchlist(models.Model):
     user_watching = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="user_watching", blank=True, null=True)
-    listings_watched = models.ManyToManyField(
-        Listing, blank=True, related_name="listings_watched")
+    listing_watching = models.ForeignKey(
+        Listing, on_delete=models.CASCADE, related_name="listing_watching", blank=True, null=True)
 
     def __str__(self):
-        return f"{self.id}: {self.user_watching} {self.listings_watched.all()}"
+        return f"{self.id}: {self.user_watching} {self.listing_watching}"
 
 #  self.level.all().values_list('code', flat=True)))

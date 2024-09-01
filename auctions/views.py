@@ -8,10 +8,6 @@ from .models import User, Listing, Categories, Watchlist
 from django.contrib.auth.decorators import login_required
 
 
-def checkwatchlist(object):
-    pass
-
-
 def index(request):
     return render(request, "auctions/index.html", {
         "listings": Listing.objects.all()
@@ -70,25 +66,51 @@ def register(request):
         return render(request, "auctions/register.html")
 
 
-def listing(request, listing_id):
-    if request.method == "POST":
-        try:
-            current_user = request.user
-            listing = Listing.objects.get(pk=listing_id)
-        except KeyError:
-            return HttpResponseBadRequest("Bad Request")
-        watchlist = Watchlist.objects.create(user_watching=current_user)
-        watchlist.listings_watched.add(listing)
-        watchlist.save()
-        print(watchlist)
-        print(watchlist.listings_watched)
-        return render(request, "auctions/listing.html", {"listing": listing})
+# def watchlist_add(request, product_id):
+#     item_to_save = get_object_or_404(Product, pk=product_id)
+#     # Check if the item already exists in that user watchlist
+#     if Watchlist.objects.filter(user=request.user, item=item_id).exists():
+#         messages.add_message(request, messages.ERROR,
+#                              "You already have it in your watchlist.")
+#         return HttpResponseRedirect(reverse("auctions:index"))
+#     # Get the user watchlist or create it if it doesn't exists
+#     user_list, created = Watchlist.objects.get_or_create(user=request.user)
+#     # Add the item through the ManyToManyField (Watchlist => item)
+#     user_list.item.add(item_to_save)
+#     messages.add_message(request, messages.SUCCESS,
+#                          "Successfully added to your watchlist")
+#     return render(request, "auctions/watchlist.html")
 
+
+def watchlist(request):
+    if request.method == "POST":
+        current_user = request.user
+        listing = Listing.objects.get(pk=request.POST.get('listing_id'))
+        watchlist_exists = Watchlist.objects.filter(
+            user_watching=current_user, listing_watching=listing).exists()
+        if watchlist_exists == True:
+            watchlist = Watchlist.objects.get(listing_watching=listing)
+            watchlist_id = watchlist.id
+            Watchlist.objects.get(id=watchlist_id).delete()
+            return HttpResponseRedirect(reverse("listing", args=(listing.id,)))
+        else:
+            watchlist = Watchlist.objects.create(
+                user_watching=current_user, listing_watching=listing)
+            print(watchlist)
+            return HttpResponseRedirect(reverse("listing", args=(listing.id,)))
     else:
-        listing = Listing.objects.get(pk=listing_id)
-        return render(request, "auctions/listing.html", {
-            "listing": listing
-        })
+        user_is_watching = Watchlist.objects.filter(
+            user_watching=request.user)
+        return render(request, "auctions/watchlist.html", {"watchlist": user_is_watching})
+
+
+def listing(request, listing_id):
+    listing = Listing.objects.get(pk=listing_id)
+    watchlist = Watchlist.objects.filter(
+        user_watching=request.user, listing_watching=listing).exists()
+    return render(request, "auctions/listing.html", {
+        "listing": listing, "watchlist": watchlist
+    })
 
 
 class AddListing(forms.Form):
