@@ -37,3 +37,13 @@ class Listing(models.Model):
 
     def __str__(self):
         return f"{self.id}: {self.title} with starting bid: {self.starting_bid}"
+
+
+class Watchlist(models.Model):
+    user_watching = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="user_watching", blank=True, null=True)
+    listings_watched = models.ManyToManyField(
+        Listing, blank=True, related_name="listings_watched")
+
+    def __str__(self):
+        return f"{self.id}: {self.user_watching}"

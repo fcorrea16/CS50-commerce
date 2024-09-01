@@ -4,6 +4,13 @@
 <h2>Bid on {{listing.title}}</h2>
 <p>Starting Bid = U${{listing.starting_bid}}</p>
 
+{% if user.is_authenticated %}
+<form action="{{request.path}}" method="post">
+    {% csrf_token %}
+    <input class="btn btn-primary watchlist" type="submit" value="watchlist">
+</form>
+{% else %}
+{% endif %}
 
 <div class="listing_img"><img src="../media/{{listing.image}}" alt="{{listing.title}} image"></div>
 <p>{{listing.description}}</p>

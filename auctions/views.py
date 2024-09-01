@@ -1,10 +1,10 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest
 from django.shortcuts import render
 from django.urls import reverse
 from django import forms
-from .models import User, Listing, Categories
+from .models import User, Listing, Categories, Watchlist
 from django.contrib.auth.decorators import login_required
 
 
@@ -67,10 +67,24 @@ def register(request):
 
 
 def listing(request, listing_id):
-    listing = Listing.objects.get(pk=listing_id)
-    return render(request, "auctions/listing.html", {
-        "listing": listing
-    })
+    if request.method == "POST":
+        try:
+            current_user = request.user
+            listing = Listing.objects.get(pk=listing_id)
+        except KeyError:
+            return HttpResponseBadRequest("Bad Request")
+        watchlist = Watchlist.objects.create(user_watching=current_user)
+        watchlist.listings_watched.add(listing)
+        watchlist.save()
+        print(watchlist)
+        print(watchlist.listings_watched)
+        return render(request, "auctions/listing.html", {"listing": listing})
+
+    else:
+        listing = Listing.objects.get(pk=listing_id)
+        return render(request, "auctions/listing.html", {
+            "listing": listing
+        })
 
 
 class AddListing(forms.Form):
