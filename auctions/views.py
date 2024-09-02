@@ -93,18 +93,48 @@ def listing(request, listing_id):
     watchlist = Watchlist.objects.filter(
         user_watching=request.user, listing_watching=listing).exists()
     # current_bid = Listing.objects.get(current_bid=current_bid)
-    bid = 0
+    highest_bid = 0
+    next_bid = listing.starting_bid + 1
+    # bid_min = listing.starting_bid + 1
     try:
         bid = Bids.objects.get(bid_listing=listing)
+        highest_bid = bid.highest_bid
+        next_bid = highest_bid + 1
     except:
-        bid = 0
+        highest_bid = 0
+        next_bid = listing.starting_bid + 1
+        # bid_min = listing.starting_bid + 1
     return render(request, "auctions/listing.html", {
-        "listing": listing, "watchlist": watchlist, "bid": bid
+        "listing": listing, "watchlist": watchlist, "highest_bid": highest_bid, "next_bid": next_bid
     })
 
 
 def bid(request):
-    pass
+    if request.method == "POST":
+        new_bid = request.POST.get('new_bid')
+        listing_id = request.POST.get('listing_id')
+        listing = Listing.objects.get(pk=listing_id)
+        print(new_bid)
+        print(listing_id)
+        print(listing)
+        try:
+            Bids.objects.filter(bid_listing=listing_id).exists()
+            current_bid = Bids.objects.filter(bid_listing=listing_id)
+            print(current_bid)
+            if current_bid.highest_bid < new_bid:
+                current_bid.objects.set(
+                    highest_bid=new_bid, bid_user=request.user)
+                return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
+            else:
+                return HttpResponseBadRequest("Bad Request: current bid is bigger than your bid")
+        except:
+            # not sure why it's going here
+            print("attribute error")
+            Bids.objects.create(highest_bid=new_bid,
+                                bid_user=request.user, bid_listing=listing)
+            return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
+    else:
+        return render(request, "auctions/bid.html", {"new_bid": new_bid, "listing": listing})
 
 
 class AddListing(forms.Form):
