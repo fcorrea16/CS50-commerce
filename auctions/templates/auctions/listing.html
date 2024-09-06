@@ -8,8 +8,14 @@
 <p>no bids yet</p>
 {% else %}
 <p>Highest Bid = U${{highest_bid }}</p>
+{% if is_user_highest_bidder %}
+<p>Congrats, you are the highest bidder!</p>
+{% endif %}
 {% endif %}
 
+{% if message %}
+<p>{{message}}</p>
+{% endif %}
 
 {% if user.is_authenticated %}
 <form action="{% url 'bid' %}" method="post">

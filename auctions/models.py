@@ -50,8 +50,8 @@ class Bids(models.Model):
         User, on_delete=models.CASCADE, related_name="bid_user", blank=True, null=True)
     bid_listing = models.ForeignKey(
         Listing, on_delete=models.CASCADE, related_name="bid_listing", blank=True, null=True)
-    highest_bid = models.IntegerField(default=0)
+    bid = models.IntegerField(default=0)
     latest_bid = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.id}: {self.highest_bid} {self.bid_user}"
+        return f"{self.id}: {self.bid} {self.bid_user}"

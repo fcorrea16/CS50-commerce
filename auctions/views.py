@@ -6,6 +6,7 @@ from django.urls import reverse
 from django import forms
 from .models import User, Listing, Categories, Watchlist, Bids
 from django.contrib.auth.decorators import login_required
+from django.db.models import Max
 
 
 def index(request):
@@ -92,47 +93,38 @@ def listing(request, listing_id):
     listing = Listing.objects.get(pk=listing_id)
     watchlist = Watchlist.objects.filter(
         user_watching=request.user, listing_watching=listing).exists()
-    # current_bid = Listing.objects.get(current_bid=current_bid)
     highest_bid = 0
     next_bid = listing.starting_bid + 1
-    # bid_min = listing.starting_bid + 1
-    try:
-        bid = Bids.objects.get(bid_listing=listing)
-        highest_bid = bid.highest_bid
+    all_bids = Bids.objects.filter(bid_listing=listing_id)
+    highest_bid = all_bids.aggregate(Max('bid', default=0))
+    highest_bid = highest_bid['bid__max']
+    if highest_bid > next_bid:
         next_bid = highest_bid + 1
-    except:
-        highest_bid = 0
-        next_bid = listing.starting_bid + 1
-        # bid_min = listing.starting_bid + 1
+    is_user_highest_bidder = Bids.objects.filter(
+        bid_listing=listing_id, bid_user=request.user, bid=highest_bid)
+    print(is_user_highest_bidder)
     return render(request, "auctions/listing.html", {
-        "listing": listing, "watchlist": watchlist, "highest_bid": highest_bid, "next_bid": next_bid
+        "listing": listing, "watchlist": watchlist, "highest_bid": highest_bid, "next_bid": next_bid, "is_user_highest_bidder": is_user_highest_bidder
     })
 
 
 def bid(request):
     if request.method == "POST":
-        new_bid = request.POST.get('new_bid')
+        new_bid = int(request.POST.get('new_bid'))
         listing_id = request.POST.get('listing_id')
         listing = Listing.objects.get(pk=listing_id)
-        print(new_bid)
-        print(listing_id)
-        print(listing)
-        try:
-            Bids.objects.filter(bid_listing=listing_id).exists()
-            current_bid = Bids.objects.filter(bid_listing=listing_id)
-            print(current_bid)
-            if current_bid.highest_bid < new_bid:
-                current_bid.objects.set(
-                    highest_bid=new_bid, bid_user=request.user)
-                return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
-            else:
-                return HttpResponseBadRequest("Bad Request: current bid is bigger than your bid")
-        except:
-            # not sure why it's going here
-            print("attribute error")
-            Bids.objects.create(highest_bid=new_bid,
+        all_bids = Bids.objects.filter(bid_listing=listing_id)
+        highest_bid = all_bids.aggregate(Max('bid', default=0))
+        highest_bid = highest_bid['bid__max']
+        if new_bid > highest_bid:
+            Bids.objects.create(bid=new_bid,
                                 bid_user=request.user, bid_listing=listing)
             return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
+        else:
+            message = "Your bid is smaller than current bid or not valid."
+            print(message)
+            #  erro message?
+            return HttpResponseRedirect(reverse("listing", args=(listing_id,)), {"message": message})
     else:
         return render(request, "auctions/bid.html", {"new_bid": new_bid, "listing": listing})
 
