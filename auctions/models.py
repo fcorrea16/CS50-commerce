@@ -32,7 +32,7 @@ class Listing(models.Model):
         User, on_delete=models.CASCADE, related_name="listed_by")
 
     def __str__(self):
-        return f"{self.id}: {self.title} with starting bid: {self.starting_bid}"
+        return f"{self.id}: {self.title} - starting bid: {self.starting_bid}"
 
 
 class Watchlist(models.Model):
@@ -51,7 +51,7 @@ class Bids(models.Model):
     bid_listing = models.ForeignKey(
         Listing, on_delete=models.CASCADE, related_name="bid_listing", blank=True, null=True)
     bid = models.IntegerField(default=0)
-    latest_bid = models.DateTimeField(auto_now=True)
+    bid_time = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.id}: {self.bid} {self.bid_user}"
