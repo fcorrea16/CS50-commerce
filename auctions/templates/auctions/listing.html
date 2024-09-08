@@ -2,6 +2,22 @@
 
 {% block body %}
 <h2>Bid on {{listing.title}}</h2>
+{% if listed_by_user == True %}
+<div>
+    <p>This listing is yours and it's:</p>
+    <form action="{% url 'listings' %}" method="post">
+        {% csrf_token %}
+        {%if listing.active == True %}
+        <input class="btn btn-primary" type="submit" name="status-active" value="active">
+        {%else %}
+        <input class="btn btn-outline-primary" type="submit" name="status-not-active" value="not active">
+        {%endif%}
+    </form>
+</div>
+{%endif %}
+
+
+
 <p>Starting Bid = U${{listing.starting_bid}}</p>
 
 {% if highest_bid == 0 %}
@@ -9,7 +25,7 @@
 {% else %}
 <p>Highest Bid = U${{highest_bid }}</p>
 {% if is_user_highest_bidder %}
-<p>Congrats, you are the highest bidder!</p>
+<p>Congrats, you are currently the highest bidder!</p>
 {% endif %}
 {% endif %}
 
@@ -18,6 +34,7 @@
 {% endif %}
 
 {% if user.is_authenticated %}
+{%if listing.active == True %}
 <form action="{% url 'bid' %}" method="post">
     {% csrf_token %}
     <input type="text" name="new_bid" placeholder="{{ next_bid }}" min="{{next_bid}}">
@@ -25,20 +42,20 @@
     <input type="hidden" name="listing_id" value="{{listing.id}}" />
 </form>
 {% endif %}
+{% endif %}
 
 <div class="listing_img"><img src="../media/{{listing.image}}" alt="{{listing.title}} image"></div>
 <p>{{listing.description}}</p>
 
 
 {% if user.is_authenticated %}
-<form action="{% url 'watchlist' %}" method="post"></form>
-{% csrf_token %}
-{% if watchlist == True %}
-<input class="btn btn-outline-primary watchlist" type="submit" value="Already in your Watchlist">
-{%else%}
-<input class="btn btn-primary watchlist" type="submit" value="watchlist">
-{% endif %}
-<input type="hidden" name="listing_id" value="{{listing.id}}" />
+<form action="{% url 'watchlist' %}" method="post">
+    {% csrf_token %}
+    {% if watchlist == True %}
+    <input class="btn btn-outline-primary watchlist" type="submit" value="Already in your Watchlist">
+    {%else%}
+    <input class="btn btn-primary watchlist" type="submit" value="Add to watchlist">
+    {% endif %}
 </form>
 {% endif %}
 <p>{{listing.created_at}}</p>

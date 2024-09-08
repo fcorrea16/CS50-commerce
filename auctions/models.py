@@ -13,10 +13,6 @@ class Categories(models.Model):
         return f"{self.id}:{self.name}"
 
 
-class Listing_comments(models.Model):
-    pass
-
-
 class Listing(models.Model):
     active = models.BooleanField(default=True)
     title = models.CharField(max_length=64)
@@ -33,6 +29,17 @@ class Listing(models.Model):
 
     def __str__(self):
         return f"{self.id}: {self.title} - starting bid: {self.starting_bid}"
+
+
+class Listing_comments(models.Model):
+    comment_listing = models.ForeignKey(
+        Listing, on_delete=models.CASCADE, related_name="comment_listing")
+    comment = models.TextField(blank=False)
+    comment_user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="comment_user")
+
+    def __str__(self):
+        return f"{self.comment_user.first_name} said {self.comment} about {self.comment_listing.title}"
 
 
 class Watchlist(models.Model):
@@ -54,4 +61,4 @@ class Bids(models.Model):
     bid_time = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.id}: {self.bid} {self.bid_user}"
+        return f"{self.id}: {self.bid} {self.bid_user} {self.bid_listing.title}"

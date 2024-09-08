@@ -3,6 +3,7 @@
 {% block body %}
 <h2>Active Listings</h2>
 {% for listing in listings %}
+{% if listing.active == True %}
 <div class="home_listing">
     <h3><a href="{{listing.id}}">{{listing.title}}</a></h3>
     <p>Starting Bid = U${{listing.starting_bid}}</p>
@@ -10,6 +11,7 @@
     <p>{{listing.description|slice:":255"}}...<a href="{{listing.id}}">Read more</a></p>
     <p>Created on: {{listing.created_at}}</p>
 </div>
+{% endif %}
 {% endfor %}
 
 {% endblock %}

@@ -2,12 +2,14 @@
 
 {% block body %}
 <h3>Watchlist</h3>
-<p>Items on your watchlist:</p>
+<p>Items you are watching:</p>
 <ul>
     {% for list in watchlist %}
+    {% if list.listing_watching.active == True %}
     <a href="{{list.listing_watching.id}}">
         <li>{{list.listing_watching.title}}s</li>
     </a>
+    {% endif%}
     {% empty%}
     <li>No items in your watchlist</li>
     {% endfor %}

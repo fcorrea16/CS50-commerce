@@ -67,8 +67,42 @@ def register(request):
         return render(request, "auctions/register.html")
 
 
+def categories(request):
+    return render(request, "auctions/categories.html", {
+        "categories": Categories.objects.all()
+    })
+
+
+def category(request, category_id):
+    category = Categories.objects.get(id=category_id)
+    all_listings = Listing.objects.filter(categories=category_id)
+    return render(request, "auctions/category.html", {
+        "all_listings": all_listings, "category": category
+    })
+
+
+def listings(request):
+    if request.method == "POST":
+        listing_id = request.META.get('HTTP_REFERER')
+        listing_id = listing_id[-1]
+        listing = Listing.objects.get(pk=listing_id)
+        post_status = request.POST.get('status-active')
+        if post_status == "active":
+            listing.active = False
+            listing.save()
+            print(listing.active)
+        else:
+            listing.active = True
+            listing.save()
+            print(listing.active)
+        return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
+    else:
+        pass
+
+
 def listing(request, listing_id):
     listing = Listing.objects.get(pk=listing_id)
+    listed_by_user = False
     watchlist = 0
     highest_bid = 0
     is_user_highest_bidder = 0
@@ -76,6 +110,8 @@ def listing(request, listing_id):
     all_bids = Bids.objects.filter(bid_listing=listing_id)
     highest_bid = all_bids.aggregate(Max('bid', default=0))
     highest_bid = highest_bid['bid__max']
+    if request.user == listing.listed_by:
+        listed_by_user = True
     if request.user.is_authenticated == True:
         if highest_bid > next_bid:
             next_bid = highest_bid + 1
@@ -84,7 +120,7 @@ def listing(request, listing_id):
         watchlist = Watchlist.objects.filter(
             user_watching=request.user.id, listing_watching=listing).exists()
     return render(request, "auctions/listing.html", {
-        "listing": listing, "watchlist": watchlist, "highest_bid": highest_bid, "next_bid": next_bid, "is_user_highest_bidder": is_user_highest_bidder
+        "listing": listing, "watchlist": watchlist, "highest_bid": highest_bid, "next_bid": next_bid, "is_user_highest_bidder": is_user_highest_bidder, "listed_by_user": listed_by_user
     })
 
 
@@ -98,7 +134,7 @@ class AddListing(forms.Form):
         queryset=Categories.objects.all())
 
 
-@login_required(login_url='login')
+@ login_required(login_url='login')
 def add(request):
     if request.method == "POST":
         form = AddListing(request.POST, request.FILES)
@@ -120,7 +156,7 @@ def add(request):
         })
 
 
-@login_required(login_url='login')
+@ login_required(login_url='login')
 def bid(request):
     if request.method == "POST":
         new_bid = int(request.POST.get('new_bid'))
@@ -139,19 +175,16 @@ def bid(request):
             #  erro message?
             return HttpResponseRedirect(reverse("listing", args=(listing_id,)), {"message": message})
     else:
-        all_user_bids = Bids.objects.filter(bid_user=request.user)
-        # show only the highest bid of each item
-        # all_bids = Bids.objects.filter(bid_listing=listing_id)
-        # highest_bid = all_bids.aggregate(Max('bid', default=0))
-        # highest_bid = highest_bid['bid__max']
-        return render(request, "auctions/bid.html", {"all_user_bids": all_user_bids})
+        return HttpResponseRedirect(reverse("index"))
 
 
-@login_required(login_url='login')
+@ login_required(login_url='login')
 def watchlist(request):
     if request.method == "POST":
         current_user = request.user
-        listing = Listing.objects.get(pk=request.POST.get('listing_id'))
+        listing_id = request.META.get('HTTP_REFERER')
+        listing_id = listing_id[-1]
+        listing = Listing.objects.get(pk=listing_id)
         watchlist_exists = Watchlist.objects.filter(
             user_watching=current_user, listing_watching=listing).exists()
         if watchlist_exists == True:
@@ -167,4 +200,5 @@ def watchlist(request):
     else:
         user_is_watching = Watchlist.objects.filter(
             user_watching=request.user)
+
         return render(request, "auctions/watchlist.html", {"watchlist": user_is_watching})

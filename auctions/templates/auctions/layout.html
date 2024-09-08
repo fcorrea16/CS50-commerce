@@ -23,13 +23,14 @@
         <li class="nav-item">
             <a class="nav-link" href="{% url 'index' %}">Active Listings</a>
         </li>
+        <li class="nav_item"><a class="nav-link" href="{% url 'categories' %}">Categories</a></li>
         {% if user.is_authenticated %}
+
+        <li class="nav_item"><a class="nav-link" href="{% url 'add' %}">Add Listing</a></li>
+        <li class="nav_item"><a class="nav-link" href="{% url 'watchlist' %}">Watchlist</a></li>
         <li class="nav-item">
             <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
         </li>
-        <li class="nav_item"><a class="nav-link" href="{% url 'add' %}">Add Listing</a></li>
-        <li class="nav_item"><a class="nav-link" href="{% url 'watchlist' %}">Watchlist</a></li>
-        <li class="nav_item"><a class="nav-link" href="{% url 'bid' %}">Items your bidding</a></li>
         {% else %}
         <li class="nav-item">
             <a class="nav-link" href="{% url 'login' %}">Log In</a>
