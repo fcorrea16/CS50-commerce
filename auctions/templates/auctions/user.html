@@ -13,6 +13,14 @@
             <div class="col-9">
                 <h3><a href="../{{listing.id}}">{{listing.title}}</a></h3>
                 <p>Listing is {% if listing.active == True %}Active{% else %}Inactive{%endif%}</p>
+                <p>Number of bids on item: {{listing.bid_counter}}</p>
+                <p>{% if listing.highest_bid == 0 %}
+                    <strong>Starting Bid U${{listing.starting_bid}}</strong>
+                    {% else %}
+                    <strong>Current Bid U${{listing.highest_bid}}</strong>
+                    {% endif%}
+                </p>
+
 
             </div>
         </div>

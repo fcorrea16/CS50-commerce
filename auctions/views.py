@@ -144,6 +144,7 @@ def listing(request, listing_id):
                     Bids.objects.create(bid=new_bid,
                                         bid_user=request.user, bid_listing=listing)
                     listing.bid_counter += 1
+                    listing.highest_bid = new_bid
                     listing.save()
                     return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
                 else:
@@ -158,6 +159,7 @@ def listing(request, listing_id):
                     Bids.objects.create(bid=new_bid,
                                         bid_user=request.user, bid_listing=listing)
                     listing.bid_counter += 1
+                    listing.highest_bid = new_bid
                     listing.save()
                     return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
                 else:

@@ -28,6 +28,7 @@ class Listing(models.Model):
     listed_by = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="listed_by")
     bid_counter = models.IntegerField(default=0)
+    highest_bid = models.IntegerField(default=0)
 
     def __str__(self):
         return f"{self.id}: {self.title} - starting bid: {self.starting_bid}"

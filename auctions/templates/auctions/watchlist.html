@@ -12,8 +12,11 @@
                     class="rounded home_listing_img "></a></div>
         <div class="col-9">
             <h3><a href="{{list.listing_watching.id}}">{{list.listing_watching.title}}</a></h3>
-            <p><strong>Starting Bid
-                    U${{list.listing_watching.starting_bid}}</strong>
+            <p>{% if list.listing_watching.highest_bid == 0 %}
+                <strong>Current Bid U${{list.listing_watching.starting_bid}}</strong>
+                {% else %}
+                <strong>Current Bid U${{list.listing_watching.highest_bid}}</strong>
+                {% endif%}
             </p>
             <p>{{list.listing_watching.description|slice:":250"}}...</p>
             <div class="home_listing_about">
