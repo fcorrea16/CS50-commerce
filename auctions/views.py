@@ -85,7 +85,7 @@ def category(request, category_id):
 def listings(request):
     if request.method == "POST":
         listing_id = request.META.get('HTTP_REFERER')
-        listing_id = listing_id[-1]
+        listing_id = listing_id.split('/', 4)[-1]
         listing = Listing.objects.get(pk=listing_id)
         post_status = request.POST.get('status-active')
         if post_status == "active":
@@ -134,7 +134,7 @@ def listing(request, listing_id):
         else:
             new_bid = int(request.POST.get('new_bid'))
             listing_id = request.META.get('HTTP_REFERER')
-            listing_id = listing_id[-1]
+            listing_id = listing_id.split('/', 4)[-1]
             listing = Listing.objects.get(pk=listing_id)
             all_bids = Bids.objects.filter(bid_listing=listing_id)
             highest_bid = all_bids.aggregate(Max('bid', default=0))
@@ -203,24 +203,6 @@ def add(request):
 @ login_required(login_url='login')
 def bid(reques):
     pass
-# def bid(request):
-#     if request.method == "POST":
-#         new_bid = int(request.POST.get('new_bid'))
-#         listing_id = request.META.get('HTTP_REFERER')
-#         listing_id = listing_id[-1]
-#         listing = Listing.objects.get(pk=listing_id)
-#         all_bids = Bids.objects.filter(bid_listing=listing_id)
-#         highest_bid = all_bids.aggregate(Max('bid', default=0))
-#         highest_bid = highest_bid['bid__max']
-#         if new_bid > highest_bid:
-#             Bids.objects.create(bid=new_bid,
-#                                 bid_user=request.user, bid_listing=listing)
-#             return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
-#         else:
-#             # return render(request, "listing", {"message": "Your bid is smaller than current bid or not valid"})
-#             return HttpResponseRedirect(request.META.get('HTTP_REFERER'), {{"message": "Your bid is smaller than current bid or not valid"}})
-#     else:
-#         return HttpResponseRedirect(reverse("index"))
 
 
 @ login_required(login_url='login')
@@ -228,11 +210,10 @@ def watchlist(request):
     current_user = request.user
     if request.method == "POST":
         listing_id = request.META.get('HTTP_REFERER')
-        listing_id = listing_id[-1]
+        listing_id = listing_id.split('/', 4)[-1]
         listing = Listing.objects.get(pk=listing_id)
         watchlist_exists = Watchlist.objects.filter(
             user_watching=current_user, listing_watching=listing).exists()
-        print(watchlist_exists)
         if watchlist_exists == True:
             watchlist = Watchlist.objects.filter(listing_watching=listing)
             watchlist.delete()
@@ -260,7 +241,7 @@ def comment(request):
     if request.method == "POST":
         current_user = request.user
         listing_id = request.META.get('HTTP_REFERER')
-        listing_id = listing_id[-1]
+        listing_id = listing_id.split('/', 4)[-1]
         listing = Listing.objects.get(pk=listing_id)
         comment = request.POST.get('comment')
         if not comment:
