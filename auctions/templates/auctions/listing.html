@@ -9,10 +9,17 @@
         </div>
         <div class="listing_info col-sm-12 col-md-6">
             {% if is_user_highest_bidder %}
+            {%if listing.active == True %}
             <div class="hig_bid_box">
                 <p class="highest_bidder">Congrats, you are currently the highest bidder!</p>
             </div>
+            {% else %}
+            <div class="hig_bid_box">
+                <p class="highest_bidder">Congrats, you won this item!</p>
+            </div>
             {% endif %}
+            {% endif %}
+
             {% if listed_by_user == True %}
             <div class=" listing_is_by_user">
                 <div class="d-flex row">
