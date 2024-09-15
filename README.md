@@ -1,6 +1,6 @@
 # CS50-commerce
 
-Design an eBay-like e-commerce auction site that will allow users to post auction listings, place bids on listings, comment on those listings, and add listings to a “watchlist.”
+Design an eBay-like e-commerce auction site usign django that will allow users to post auction listings, place bids on listings, comment on those listings, and add listings to a “watchlist.”
 
 Video of it working: https://youtu.be/W7SSX3SWVIc
 
