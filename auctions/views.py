@@ -139,19 +139,34 @@ def listing(request, listing_id):
             all_bids = Bids.objects.filter(bid_listing=listing_id)
             highest_bid = all_bids.aggregate(Max('bid', default=0))
             highest_bid = highest_bid['bid__max']
-            if new_bid > highest_bid:
-                Bids.objects.create(bid=new_bid,
-                                    bid_user=request.user, bid_listing=listing)
-                listing.bid_counter += 1
-                listing.save()
-                return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
+            if listing.starting_bid > highest_bid:
+                if new_bid > listing.starting_bid:
+                    Bids.objects.create(bid=new_bid,
+                                        bid_user=request.user, bid_listing=listing)
+                    listing.bid_counter += 1
+                    listing.save()
+                    return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
+                else:
+                    return render(request, "auctions/listing.html", {
+                        "listing": listing, "watchlist": watchlist, "highest_bid": highest_bid,
+                        "next_bid": next_bid, "is_user_highest_bidder": is_user_highest_bidder,
+                        "listed_by_user": listed_by_user, "comments": comments,
+                        "message": "Your bid is smaller than current bid or not valid."
+                    })
             else:
-                return render(request, "auctions/listing.html", {
-                    "listing": listing, "watchlist": watchlist, "highest_bid": highest_bid,
-                    "next_bid": next_bid, "is_user_highest_bidder": is_user_highest_bidder,
-                    "listed_by_user": listed_by_user, "comments": comments,
-                    "message": "Your bid is smaller than current bid or not valid."
-                })
+                if new_bid > highest_bid:
+                    Bids.objects.create(bid=new_bid,
+                                        bid_user=request.user, bid_listing=listing)
+                    listing.bid_counter += 1
+                    listing.save()
+                    return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
+                else:
+                    return render(request, "auctions/listing.html", {
+                        "listing": listing, "watchlist": watchlist, "highest_bid": highest_bid,
+                        "next_bid": next_bid, "is_user_highest_bidder": is_user_highest_bidder,
+                        "listed_by_user": listed_by_user, "comments": comments,
+                        "message": "Your bid is smaller than current bid or not valid."
+                    })
     else:
         return render(request, "auctions/listing.html", {
             "listing": listing, "watchlist": watchlist, "highest_bid": highest_bid,
