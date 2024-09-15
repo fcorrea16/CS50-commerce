@@ -11,36 +11,43 @@
 </head>
 
 <body>
-    <h1>Auctions</h1>
-    <div>
-        {% if user.is_authenticated %}
-        Signed in as <strong>{{ user.username }}</strong>.
-        {% else %}
-        Not signed in.
-        {% endif %}
-    </div>
-    <ul class="nav">
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'index' %}">Active Listings</a>
-        </li>
-        <li class="nav_item"><a class="nav-link" href="{% url 'categories' %}">Categories</a></li>
-        {% if user.is_authenticated %}
 
-        <li class="nav_item"><a class="nav-link" href="{% url 'add' %}">Add Listing</a></li>
-        <li class="nav_item"><a class="nav-link" href="{% url 'watchlist' %}">Watchlist</a></li>
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
-        </li>
-        {% else %}
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'login' %}">Log In</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'register' %}">Register</a>
-        </li>
-        {% endif %}
-    </ul>
-    <hr>
+    <div class="header container-fluid">
+
+        <div class="row">
+            <a href="{% url 'index' %}"><img class="logo" src="{% get_media_prefix %}{{'auction-logo2.png'}}"></a>
+            <div class=" nav col-md-7 col-12">
+                <ul class="nav_left d-inline-flex">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'index' %}">Listings</a>
+                    </li>
+                    <li class="nav_item"><a class="nav-link" href="{% url 'categories' %}">Categories</a></li>
+                    {% if user.is_authenticated %}
+                    <li class="nav_item"><a class="nav-link" href="{% url 'add' %}">Add</a></li>
+                    <li class="nav_item"><a class="nav-link" href="{% url 'watchlist' %}">Watchlist</a></li>
+
+                </ul>
+            </div>
+            <div class="nav col-md-5 col-12  d-inline-flex nav_right">
+                <ul>
+                    <li class="nav-link">Hello, <strong>{{ user.username }}</strong></li>
+                    <li><a class="nav-link" href="user/{{user.id}}">My listings</a></li>
+                    <li><a class="nav-link" href="{% url 'logout' %}">Log Out</a></li>
+                </ul>
+
+                {% else %}
+                </ul>
+            </div>
+            <div class="nav col-sm-5 col-12  d-inline-flex nav_right">
+                <ul>
+                    <li>Not signed in.</li>
+                    <li><a class="nav-link" href="{% url 'login' %}">Log In</a></li>
+                    <li><a class="nav-link" href="{% url 'register' %}">Register</a></li>
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+    </div>
     {% block body %}
     {% endblock %}
 </body>

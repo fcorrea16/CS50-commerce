@@ -1,62 +1,102 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-<h2>Bid on {{listing.title}}</h2>
-{% if listed_by_user == True %}
-<div>
-    <p>This listing is yours and it's:</p>
-    <form action="{% url 'listings' %}" method="post">
-        {% csrf_token %}
-        {%if listing.active == True %}
-        <input class="btn btn-primary" type="submit" name="status-active" value="active">
-        {%else %}
-        <input class="btn btn-outline-primary" type="submit" name="status-not-active" value="not active">
-        {%endif%}
-    </form>
+
+<div class="main-content container">
+    <div class="row">
+        <div class="listing_img col-sm-12 col-md-6 ">
+            <img src="../media/{{listing.image}}" alt="{{listing.title}} image">
+        </div>
+        <div class="listing_info col-sm-12 col-md-6">
+            {% if is_user_highest_bidder %}
+            <div class="hig_bid_box">
+                <p class="highest_bidder">Congrats, you are currently the highest bidder!</p>
+            </div>
+            {% endif %}
+            {% if listed_by_user == True %}
+            <div class=" listing_is_by_user">
+                <div class="d-flex row">
+                    <p class="listing_status">This listing is yours and it's:</p>
+                    <form action="{% url 'listings' %}" method="post">
+                        {% csrf_token %}
+                        {%if listing.active == True %}
+                        <input class="btn btn-primary btn-active" type="submit" name="status-active" value="active">
+                        {%else %}
+                        <input class="btn btn-outline-primary" type="submit" name="status-not-active"
+                            value="not active">
+                        {%endif%}
+                    </form>
+                </div>
+            </div>
+            {%endif %}
+
+            <h2>Bid on {{listing.title}}</h2>
+            <p>Starting Bid = U${{listing.starting_bid}}</p>
+
+
+            {% if highest_bid == 0 %}
+            <p class="max_bid">no bids yet</p>
+            {% else %}
+            <p class="max_bid">Highest Bid = U${{highest_bid }}</p>
+            {% endif %}
+
+            {% if message %}
+            <div class="alert alert-danger" role="alert">{{ message }}</div>
+            {% endif %}
+
+            {% if user.is_authenticated %}
+            {%if listing.active == True %}
+            <form action="{{ request.get_full_path }}" method="post" class="form-group bid_form row">
+                {% csrf_token %}
+                <input type="text" class="form-control bid_input col-4" name="new_bid" placeholder="{{ next_bid }}"
+                    min="{{next_bid}}">
+                <input class="btn btn-primary new_bid col-4" type="submit" value="Submit Bid">
+            </form>
+            {% endif %}
+            {% endif %}
+
+            {%if listing.bid_counter > 0%}
+            <P>Number of bids on item = {{listing.bid_counter}}</P>
+            {% endif %}
+            <p>{{listing.description}}</p>
+
+            {% if user.is_authenticated %}
+            {%if listing.active == True %}
+            <form action="{% url 'watchlist' %}" method="post">
+                {% csrf_token %}
+                {% if watchlist == True %}
+                <input class="btn btn-outline-primary watchlist" type="submit" value="Already in your Watchlist">
+                {%else%}
+                <input class="btn btn-primary watchlist" type="submit" value="Add to watchlist">
+                {% endif %}
+            </form>
+            {% endif %}
+            {% endif %}
+            <p class="p_small">Listing Created on: {{listing.created_at}}</p>
+        </div>
+    </div>
+    <hr>
+    <h3>Comments</h3>
+    <div class="listing_comment d-flex flex-wrap">
+
+        {% for comment in comments %}
+        <div class="comment_section col-sm-12 col-md-5">
+            <p clas="comment_text">{{comment.comment}}</p>
+            <p class="comment_by">Comment by: {{comment.comment_user.username}}</p>
+        </div>
+        {% empty %}
+        <div class="comment_section col-sm-12 col-md-5">
+            <p clas="comment_text">No comments yet</p>
+        </div>
+        {%endfor%}
+        {% if user.is_authenticated %}
+        <form action="{% url 'comment' %}" method="post" class="form-group col-5 comment_form">
+            {% csrf_token %}
+            <textarea name="comment" placeholder="Comment here" class="form-control"></textarea>
+            <input class="btn btn-primary watchlist" type="submit" value="Comment">
+        </form>
+        {% endif %}
+    </div>
 </div>
-{%endif %}
 
-
-
-<p>Starting Bid = U${{listing.starting_bid}}</p>
-
-{% if highest_bid == 0 %}
-<p>no bids yet</p>
-{% else %}
-<p>Highest Bid = U${{highest_bid }}</p>
-{% if is_user_highest_bidder %}
-<p>Congrats, you are currently the highest bidder!</p>
-{% endif %}
-{% endif %}
-
-{% if message %}
-<p>{{message}}</p>
-{% endif %}
-
-{% if user.is_authenticated %}
-{%if listing.active == True %}
-<form action="{% url 'bid' %}" method="post">
-    {% csrf_token %}
-    <input type="text" name="new_bid" placeholder="{{ next_bid }}" min="{{next_bid}}">
-    <input class="btn btn-primary new_bid" type="submit" value="Submit Bid">
-    <input type="hidden" name="listing_id" value="{{listing.id}}" />
-</form>
-{% endif %}
-{% endif %}
-
-<div class="listing_img"><img src="../media/{{listing.image}}" alt="{{listing.title}} image"></div>
-<p>{{listing.description}}</p>
-
-
-{% if user.is_authenticated %}
-<form action="{% url 'watchlist' %}" method="post">
-    {% csrf_token %}
-    {% if watchlist == True %}
-    <input class="btn btn-outline-primary watchlist" type="submit" value="Already in your Watchlist">
-    {%else%}
-    <input class="btn btn-primary watchlist" type="submit" value="Add to watchlist">
-    {% endif %}
-</form>
-{% endif %}
-<p>{{listing.created_at}}</p>
 {% endblock %}

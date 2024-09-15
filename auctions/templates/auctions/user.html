@@ -1,0 +1,25 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+<div class="main-content container">
+    <h2>My listings:</h2>
+    <div>
+        {% for listing in my_listings %}
+        <hr>
+        <div class="home_listing row d-flex">
+
+            <div class="col-3 align-middle home-img-div"><a href="../{{listing.id}}"><img src="{{listing.image.url}}"
+                        alt="{{listing.title}} image" class="rounded home_listing_img "></a></div>
+            <div class="col-9">
+                <h3><a href="../{{listing.id}}">{{listing.title}}</a></h3>
+                <p>Listing is {% if listing.active == True %}Active{% else %}Inactive{%endif%}</p>
+
+            </div>
+        </div>
+        {% empty %}
+        <p>Nothing here.</p>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

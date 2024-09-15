@@ -1,18 +1,33 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-<h3>Watchlist</h3>
-<p>Items you are watching:</p>
-<ul>
+<div class="main-content container">
+    <h2>Items you are watching:</h2>
+    <hr>
     {% for list in watchlist %}
     {% if list.listing_watching.active == True %}
-    <a href="{{list.listing_watching.id}}">
-        <li>{{list.listing_watching.title}}s</li>
-    </a>
+    <div class="home_listing row d-flex">
+        <div class="col-3 align-middle home-img-div"><a href="{{list.listing_watching.id}}"><img
+                    src="{{ list.listing_watching.image.url}}" alt="{{list.listing_watching.title}} image"
+                    class="rounded home_listing_img "></a></div>
+        <div class="col-9">
+            <h3><a href="{{list.listing_watching.id}}">{{list.listing_watching.title}}</a></h3>
+            <p><strong>Current Bid
+                    U${{list.listing_watching.starting_bid}}</strong>
+            </p>
+            <p>{{list.listing_watching.description|slice:":250"}}...</p>
+            <div class="home_listing_about">
+                <p class="p_small">Created on: {{list.listing_watching.created_at}}</p>
+                <p class="p_small">Posted by: {{list.listing_watching.listed_by.username}}</p>
+            </div>
+        </div>
+        <hr>
+    </div>
+    <hr>
     {% endif%}
     {% empty%}
-    <li>No items in your watchlist</li>
+    <p>No items in your watchlist</p>
     {% endfor %}
-</ul>
-<p><a href="{% url 'index' %}">View more items</a></p>
+    <p><a class="btn btn-primary" href="{% url 'index' %}">Add more items</a></p>
+</div>
 {% endblock %}

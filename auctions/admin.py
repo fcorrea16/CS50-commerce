@@ -10,7 +10,7 @@ class BidsAdmin(admin.ModelAdmin):
 
 class ListingAdmin(admin.ModelAdmin):
     list_display = ("title", "starting_bid", "active",
-                    "created_at", "listed_by")
+                    "created_at", "listed_by", "bid_counter")
 
 
 admin.site.register(User)

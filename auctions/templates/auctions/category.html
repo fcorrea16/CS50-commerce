@@ -1,17 +1,34 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-<h2>Listings in {{category.name}}</h2>
-{% if all_listings %}
-{% for listing in all_listings %}
-{% if listing.active == True %}
-<div>
-    <a href="/auctions/{{listing.id}}">{{ listing.title }}</a>
-</div>
-{% endif %}
-{% endfor %}
-{%else%}
-<P>Nothing in this category yet.</P>
-{% endif %}
 
+<div class="main-content container">
+    <h2>Listings in {{category.name}}</h2>
+    {% if all_listings %}
+    {% for listing in all_listings %}
+    {% if listing.active == True %}
+    <hr>
+    <div class="home_listing row d-flex">
+
+        <div class="col-3 align-middle home-img-div"><a href="../{{listing.id}}"><img src="{{listing.image.url}}"
+                    alt="{{listing.title}} image" class="rounded home_listing_img "></a></div>
+        <div class="col-9">
+            <h3><a href="../{{listing.id}}">{{listing.title}}</a></h3>
+            <p><strong>Current Bid
+                    U${{listing.starting_bid}}</strong>
+            </p>
+            <p>{{listing.description|slice:":250"}}...</p>
+            <div class="home_listing_about">
+                <p class="p_small">Created on: {{listing.created_at}}</p>
+                <p class="p_small">Posted by: {{listing.listed_by.username}}</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+    {%else%}
+    <P>Nothing in this category yet.</P>
+    <a href="{% url 'index'}" class="btn-primary btn">All Active Listings</a>
+    {% endif %}
+</div>
 {% endblock %}
