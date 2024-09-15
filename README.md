@@ -23,7 +23,7 @@ Categories: Users should be able to visit a page that displays a list of all lis
 ## Installation
 Requires Python3 and the package installer for Python (pip) to run:
 
-* Install requirements (Django4): `pip install -r requirements.txt`
+* Install requirements: `pip install -r requirements.txt`
 * Clone repository
 * On terminal go to project folder:
   * Create new migrations: `python3 manage.py makemigrations`
